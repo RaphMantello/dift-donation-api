@@ -10,6 +10,7 @@ RSpec.describe "Donations API", type: :request do
     {
       donation: {
         amount_cents: 5000,
+        currency: 'EUR',
         project_id: project.id
       }
     }
@@ -30,7 +31,7 @@ RSpec.describe "Donations API", type: :request do
 
     context "with missing amount" do
       it "returns 422 Unprocessable Entity" do
-        invalid_params = { donation: { amount_cents: nil, project_id: project.id } }
+        invalid_params = { donation: { amount_cents: nil, currency: 'EUR', project_id: project.id } }
 
         post "/api/v1/donations", params: invalid_params.to_json, headers: headers
 
@@ -52,12 +53,13 @@ RSpec.describe "Donations API", type: :request do
   describe "GET /api/v1/donations/user_total" do
     context "when user has donations" do
       before do
-        create(:donation, user: user, project: project, amount_cents: 1000) # €10
-        create(:donation, user: user, project: project, amount_cents: 5000) # €50
+        create(:donation, user: user, project: project, amount_cents: 1000, currency: 'EUR') # €10
+        create(:donation, user: user, project: project, amount_cents: 5000, currency: 'EUR') # €50
       end
 
       it "returns the correct total donation amount" do
-        get "/api/v1/donations/user_total", headers: headers
+        params = { currency: 'EUR' }
+        get "/api/v1/donations/user_total", headers: headers, params: params
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -69,7 +71,8 @@ RSpec.describe "Donations API", type: :request do
 
     context "when user has no donations" do
       it "returns 0 amount_cents" do
-        get "/api/v1/donations/user_total", headers: headers
+        params = { currency: 'EUR' }
+        get "/api/v1/donations/user_total", headers: headers, params: params
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)

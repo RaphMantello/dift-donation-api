@@ -16,6 +16,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_04_103028) do
 
   create_table "donations", force: :cascade do |t|
     t.integer "amount_cents"
+    t.string "currency"
     t.bigint "user_id", null: false
     t.bigint "project_id", null: false
     t.datetime "created_at", null: false
