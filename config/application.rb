@@ -31,8 +31,12 @@ module DiftDonations
     config.middleware.use Rack::Cors do
       allow do
         origins '*'
-        resource '*', headers: :any, methods: [:get, :post, :patch, :put, :delete, :options]
+        resource '*', headers: :any, methods: [:get, :post, :options]
       end
     end
+
+    config.middleware.delete ActionDispatch::Session::CookieStore
+    config.middleware.delete ActionDispatch::Flash
+    config.middleware.delete ActionDispatch::Cookies
   end
 end
