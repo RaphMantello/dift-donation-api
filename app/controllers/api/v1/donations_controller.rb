@@ -1,5 +1,6 @@
 class Api::V1::DonationsController < ApplicationController
   def create
+    # logic to convert all amounts to euros (if possible to pay in other currencies)
     donation = Donation.new(donation_params)
     donation.user = @current_user
 
@@ -11,9 +12,18 @@ class Api::V1::DonationsController < ApplicationController
   end
 
   def user_total
+    amount_cents = @current_user.total_donations
+
+    if params[:currency]
+      # logic to validate currencies format 'EUR' (FrontEnd validations possible)
+      convertor = ConversionService.new
+      conversion = convertor.pair_conversion('EUR', params[:currency], amount_cents)
+      converted_amount_cents = conversion['conversion_result']
+    end
+
     render json: {
-      amount_cents: @current_user.total_donations,
-      currency: 'EUR'
+      amount_cents: converted_amount_cents || amount_cents,
+      currency: params[:currency] || 'EUR'
     }
   end
 
