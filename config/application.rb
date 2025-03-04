@@ -29,5 +29,7 @@ module DiftDonations
     config.middleware.delete ActionDispatch::Session::CookieStore
     config.middleware.delete ActionDispatch::Flash
     config.middleware.delete ActionDispatch::Cookies
+    config.active_storage.draw_routes = false
+    config.action_mailbox.draw_routes = false
   end
 end
