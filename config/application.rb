@@ -31,5 +31,22 @@ module DiftDonations
     config.middleware.delete ActionDispatch::Cookies
     config.active_storage.draw_routes = false
     config.action_mailbox.draw_routes = false
+
+    # Tests config
+    config.generators do |g|
+      g.test_framework :rspec,
+        fixtures: true,
+        view_specs: false,
+        helper_specs: false,
+        routing_specs: false,
+        request_specs: true,
+        controller_specs: true
+
+      g.fixture_replacement :factory_bot, dir: "spec/factories"
+
+      # Remove MiniTest files
+      g.helper false
+      g.assets false
+    end
   end
 end
