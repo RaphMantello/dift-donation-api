@@ -10,6 +10,13 @@ class Api::V1::DonationsController < ApplicationController
     end
   end
 
+  def user_total
+    render json: {
+      amount_cents: @current_user.total_donations,
+      currency: 'EUR'
+    }
+  end
+
   private
 
   def donation_params

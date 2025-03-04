@@ -48,4 +48,45 @@ RSpec.describe "Donations API", type: :request do
       end
     end
   end
+
+  describe "GET /api/v1/donations/user_total" do
+    context "when user has donations" do
+      before do
+        create(:donation, user: user, project: project, amount_cents: 1000) # €10
+        create(:donation, user: user, project: project, amount_cents: 5000) # €50
+      end
+
+      it "returns the correct total donation amount" do
+        get "/api/v1/donations/user_total", headers: headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+
+        expect(json_response["amount_cents"]).to eq(6000) # €10 + €50 = €60
+        expect(json_response["currency"]).to eq("EUR")
+      end
+    end
+
+    context "when user has no donations" do
+      it "returns 0 amount_cents" do
+        get "/api/v1/donations/user_total", headers: headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+
+        expect(json_response["amount_cents"]).to eq(0)
+        expect(json_response["currency"]).to eq("EUR")
+      end
+    end
+
+    context "when user is not authenticated" do
+      it "returns 401 Unauthorized" do
+        get "/api/v1/donations/user_total"
+
+        expect(response).to have_http_status(:unauthorized)
+        json_response = JSON.parse(response.body)
+        expect(json_response["error"]).to eq("Unauthorized")
+      end
+    end
+  end
 end
