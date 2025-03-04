@@ -1,24 +1,69 @@
 # README
+# Donations API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Ruby on Rails API for handling user donations with JWT authentication.
 
-Things you may want to cover:
+## Features
+- User authentication (JWT-based)
+- Create and track donations
+- Retrieve total donations for a user
 
-* Ruby version
+## Installation & Setup
+- Install dependencies: bundle install
+- Set DB up: rails db:create db:migrate db:seed
+- Run server: rails s
 
-* System dependencies
+## Endpoints
+### Authentication
+- Register a new user: POST  /api/v1/auth/register
+- Login & get a JWT token: POST  /api/v1/auth/login
 
-* Configuration
+All requests need a valid JWT token to be included in the headers as follows:
+"Authorization: Bearer YOUR_JWT_TOKEN"
+The token is returned on valid registration / connection
 
-* Database creation
+### Donations
+- Create a new donation: POST  /api/v1/donations
+- Get total donation amount: GET /api/v1/donations/user_total
 
-* Database initialization
+## Tests
+- Running the test suite: bundle exec rspec
 
-* How to run the test suite
+## cURL commands for manual tests
+### Register
+`curl -X POST http://localhost:3000/api/v1/auth/sign_up \
+     -H "Content-Type: application/json" \
+     -d '{
+           "email": "newuser@example.com",
+           "password": "password123"
+         }'
+`
 
-* Services (job queues, cache servers, search engines, etc.)
+### Login
+`curl -X POST http://localhost:3000/api/v1/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{
+           "email": "newuser@example.com",
+           "password": "password123"
+         }'
+`
 
-* Deployment instructions
+### Donation#create (replace JWT token with result from registration/connection)
+`curl -X POST http://localhost:3000/api/v1/donations \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "donation": {
+             "amount_cents": 5000,
+             "currency": "EUR",
+             "project_id": 1
+           }
+         }'
+`
 
-* ...
+### Donation#user_total (replace JWT token with result from registration/connection)
+`curl -X GET http://localhost:3000/api/v1/donations/user_total \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{ "currency": "EUR" }'
+`
